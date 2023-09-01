@@ -1,0 +1,19 @@
+{
+  "deployments": {
+    "network": {
+      "mumbai": {
+        "CurrentAccountUpgradeableController": {
+          "success": true,
+          "address": "0x9871be670fDa534f858c86Aa2bA491411d4dcB7a",
+          "timestamp": 1692045436489
+        },
+        "2_modify_list_current_accounts": {
+          "success": true,
+          "address": "0x9871be670fDa534f858c86Aa2bA491411d4dcB7a",
+          "timestamp": 1692256281925
+        }
+      },
+      "polygon": {}
+    }
+  }
+}
