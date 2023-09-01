@@ -237,13 +237,6 @@ describe("CipherVault", () => {
   });
 
   describe("malicious paths", () => {
-    // describe("integer overflow and underflow", () => {
-    //   it("should not allow underflow", async function () {
-    //     await expect(vault.withdrawEther(ethers.parseEther("10000"))).to.be
-    //       .reverted;
-    //   });
-    // });
-
     describe("logic errors", () => {
       it("should not allow zero ether deposits", async function () {
         await expect(
@@ -316,8 +309,4 @@ describe("CipherVault", () => {
   });
 
   describe("edge cases", () => {});
-
-  describe("numerical overflow", () => {});
-
-  describe("numerical underflow", () => {});
 });
