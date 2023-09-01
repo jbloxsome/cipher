@@ -1,13 +1,7 @@
-# Sample Hardhat Project
+# Cipher v1
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+Cipher v1 is a new decentralised banking protocol.
 
-Try running some of the following tasks:
+# License
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
-```
+Cipher v1 is licensed under the Apache License 2.0. See `LICENSE` for more information.
