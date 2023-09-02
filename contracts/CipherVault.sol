@@ -162,11 +162,11 @@ contract CipherVault is ICipherVault, ReentrancyGuard {
 
     /**
      * @dev Get token balance of an address
-     * @param user Address of the user
      * @param token Address of the token
+     * @param user Address of the user
      * @return Token balance of the user
      */
-    function getTokenBalance(address user, address token) external view override returns (uint256) {
+    function getTokenBalance(address token, address user) external view override returns (uint256) {
         return _tokenBalances[user][token];
     }
 

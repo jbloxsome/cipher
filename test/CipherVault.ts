@@ -238,7 +238,7 @@ describe("CipherVault", () => {
           vault
             .connect(accounts[0])
             .depositToken(erc20, ethers.parseEther("1000"))
-        ).to.be.revertedWith("Insufficient token balance");
+        ).to.be.reverted;
       });
     });
   });

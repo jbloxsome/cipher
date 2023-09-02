@@ -22,7 +22,7 @@ interface ICipherVault {
     function withdrawToken(address token, uint256 amount) external;
     function transferToken(address token, address destination, uint256 amount) external;
     function transferToken(address token, string calldata alias_, uint256 amount) external;
-    function getTokenBalance(address user, address token) external view returns (uint256);
+    function getTokenBalance(address token, address user) external view returns (uint256);
 
     function registerAlias(string calldata alias_) external;
     function updateAlias(string calldata alias_) external;
