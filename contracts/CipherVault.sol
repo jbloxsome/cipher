@@ -12,6 +12,12 @@ contract CipherVault is ICipherVault, ReentrancyGuard {
     // Mapping from owner to mapping from token to token balance
     mapping(address => mapping(address => uint256)) private _tokenBalances;
 
+    // Mapping from alias to address
+    mapping(string => address) private _aliases;
+
+    // Reverse mapping from address to alias
+    mapping(address => string) private _reverseAliases;
+
     /**
      * @dev Deposit ether to the vault
      */   
@@ -35,6 +41,18 @@ contract CipherVault is ICipherVault, ReentrancyGuard {
 
     /**
      * @dev Transfer ether to another address
+     * @param from Address to transfer ether from
+     * @param to Address to transfer ether to
+     * @param amount Amount of ether to transfer
+     */
+    function _transferEther(address from, address to, uint256 amount) internal {
+        _etherBalances[from] -= amount;
+        _etherBalances[to] += amount;
+        emit EtherTransferred(from, to, amount);
+    }
+
+    /**
+     * @dev Transfer ether to another address
      * @param to Address to transfer ether to
      * @param amount Amount of ether to transfer
      */
@@ -43,9 +61,18 @@ contract CipherVault is ICipherVault, ReentrancyGuard {
         require(to != address(this), "Cannot transfer to the vault address");
         require(amount > 0, "Transfer amount must be greater than zero");
         require(_etherBalances[msg.sender] >= amount, "Insufficient ether balance");
-        _etherBalances[msg.sender] -= amount;
-        _etherBalances[to] += amount;
-        emit EtherTransferred(msg.sender, to, amount);
+        _transferEther(msg.sender, to, amount);
+    }
+
+    /**
+    * @dev Transfer ether to another address using the alias
+    * @param alias_ Alias of the address
+    * @param amount Amount of ether to transfer
+    */
+    function transferEther(string calldata alias_, uint256 amount) external override nonReentrant {
+        address to = _aliases[alias_];
+        require(to != address(0), "Alias not registered");
+        _transferEther(msg.sender, to, amount);
     }
 
     /**
@@ -103,28 +130,75 @@ contract CipherVault is ICipherVault, ReentrancyGuard {
      * @param to Address to transfer token to
      * @param amount Amount of token to transfer
      */
+    function _transferToken(address token, address from, address to, uint256 amount) internal {
+        // Update internal state
+        _tokenBalances[from][token] -= amount;
+        _tokenBalances[to][token] += amount;
+
+        // Emit event
+        emit TokenTransferred(from, to, token, amount);
+    }
+
+    /**
+     * @dev Transfer token to another address
+     * @param token Address of the token
+     * @param to Address to transfer token to
+     * @param amount Amount of token to transfer
+     */
     function transferToken(address token, address to, uint256 amount) external override nonReentrant {
         require(to != address(0), "Cannot transfer to the zero address");
         require(to != address(this), "Cannot transfer to the vault address");
         require(token != address(0), "Token address cannot be zero");
         require(amount > 0, "Transfer amount must be greater than zero");
         require(_tokenBalances[msg.sender][token] >= amount, "Insufficient token balance");
+        _transferToken(token, msg.sender, to, amount);
+    }
 
-        // Update internal state
-        _tokenBalances[msg.sender][token] -= amount;
-        _tokenBalances[to][token] += amount;
-
-        // Emit event
-        emit TokenTransferred(msg.sender, to, token, amount);
+    function transferToken(address token, string calldata alias_, uint256 amount) external override nonReentrant {
+        address to_ = _aliases[alias_];
+        require(to_ != address(0), "Alias not registered");
+        _transferToken(token, msg.sender, to_, amount);
     }
 
     /**
      * @dev Get token balance of an address
-     * @param token Address of the token
      * @param user Address of the user
+     * @param token Address of the token
      * @return Token balance of the user
      */
-    function getTokenBalance(address token, address user) external view override returns (uint256) {
+    function getTokenBalance(address user, address token) external view override returns (uint256) {
         return _tokenBalances[user][token];
+    }
+
+    /**
+     * @dev Register an alias
+     * @param alias_ Alias to register
+     */
+    function registerAlias(string calldata alias_) external override nonReentrant {
+        require(_aliases[alias_] == address(0), "Alias already registered");
+        _aliases[alias_] = msg.sender;
+        _reverseAliases[msg.sender] = alias_;
+        emit AliasRegistered(msg.sender, alias_);
+    }
+
+    /**
+     * @dev Update an alias
+     * @param alias_ Alias to update
+     */
+    function updateAlias(string calldata alias_) external override nonReentrant {
+        require(_aliases[alias_] == address(0), "Alias already registered");
+        string memory oldAlias = _reverseAliases[msg.sender];
+        delete _aliases[oldAlias];
+        _aliases[alias_] = msg.sender;
+        _reverseAliases[msg.sender] = alias_;
+        emit AliasRegistered(msg.sender, alias_);
+    }
+
+    /**
+     * @dev Get the alias of an address
+     * @param user Address to get the alias for
+     */
+    function getAlias(address user) external view override returns (string memory) {
+        return _reverseAliases[user];
     }
 }

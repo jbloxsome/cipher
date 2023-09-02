@@ -1,4 +1,4 @@
-import { ethers, upgrades } from "hardhat";
+import { ethers } from "hardhat";
 
 export const deployCipherVault = async () => {
   const CipherVault = await ethers.deployContract("CipherVault", []);

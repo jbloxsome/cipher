@@ -84,12 +84,15 @@ describe("CipherVault", () => {
     });
 
     describe("ether transfers", () => {
-      it("users can some or all of their balance to another user", async () => {
+      it("users can send some or all of their balance to another user", async () => {
         // send 0.5 ether from accounts[0] to accounts[1]
         await expect(
           vault
             .connect(accounts[0])
-            .transferEther(accounts[1].address, ethers.parseEther("0.5"))
+            ["transferEther(address,uint256)"](
+              accounts[1].address,
+              ethers.parseEther("0.5")
+            )
         ).to.not.be.reverted;
       });
 
@@ -112,7 +115,11 @@ describe("CipherVault", () => {
         await expect(
           vault
             .connect(accounts[0])
-            .transferToken(erc20, accounts[1].address, ethers.parseEther("0.5"))
+            ["transferToken(address,address,uint256)"](
+              erc20,
+              accounts[1].address,
+              ethers.parseEther("0.5")
+            )
         ).to.not.be.reverted;
       });
 
@@ -252,13 +259,16 @@ describe("CipherVault", () => {
 
       it("should not allow zero ether transfers", async function () {
         await expect(
-          vault.transferEther(accounts[1].address, ethers.parseEther("0"))
+          vault["transferEther(address,uint256)"](
+            accounts[1].address,
+            ethers.parseEther("0")
+          )
         ).to.be.revertedWith("Transfer amount must be greater than zero");
       });
 
       it("should not allow zero token transfers", async function () {
         await expect(
-          vault.transferToken(
+          vault["transferToken(address,address,uint256)"](
             erc20,
             accounts[1].address,
             ethers.parseEther("0")
@@ -268,37 +278,54 @@ describe("CipherVault", () => {
 
       it("should not allow ether transfers to the zero address", async function () {
         await expect(
-          vault.transferEther(ethers.ZeroAddress, ethers.parseEther("1"))
+          vault["transferEther(address,uint256)"](
+            ethers.ZeroAddress,
+            ethers.parseEther("1")
+          )
         ).to.be.revertedWith("Cannot transfer to the zero address");
       });
 
       it("should not allow token transfers to the zero address", async function () {
         await expect(
-          vault.transferToken(erc20, ethers.ZeroAddress, ethers.parseEther("1"))
+          vault["transferToken(address,address,uint256)"](
+            erc20,
+            ethers.ZeroAddress,
+            ethers.parseEther("1")
+          )
         ).to.be.revertedWith("Cannot transfer to the zero address");
       });
 
       it("should not allow ether transfers to the vault address", async function () {
         await expect(
-          vault.transferEther(vaultAddress, ethers.parseEther("1"))
+          vault["transferEther(address,uint256)"](
+            vaultAddress,
+            ethers.parseEther("1")
+          )
         ).to.be.revertedWith("Cannot transfer to the vault address");
       });
 
       it("should not allow token transfers to the vault address", async function () {
         await expect(
-          vault.transferToken(erc20, vaultAddress, ethers.parseEther("1"))
+          vault["transferToken(address,address,uint256)"](
+            erc20,
+            vaultAddress,
+            ethers.parseEther("1")
+          )
         ).to.be.revertedWith("Cannot transfer to the vault address");
       });
 
       it("should not allow ether transfers greater than caller's balance", async function () {
         await expect(
-          vault.transferEther(accounts[1].address, ethers.parseEther("10000"))
+          vault["transferEther(address,uint256)"](
+            accounts[1].address,
+            ethers.parseEther("10000")
+          )
         ).to.be.revertedWith("Insufficient ether balance");
       });
 
       it("should not allow token transfers greater than caller's balance", async function () {
         await expect(
-          vault.transferToken(
+          vault["transferToken(address,address,uint256)"](
             erc20,
             accounts[1].address,
             ethers.parseEther("10000")
