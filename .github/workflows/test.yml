@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
       - name: Test
         uses: ambersun1234/hardhat-test-action@v1
         with:
